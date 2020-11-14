@@ -1,9 +1,9 @@
 # tf2-vgpu
 
-Handle Tensorflow 2s experimental virtual gpu api to easily create multiple virtual GPUs on systems with (for now) 1 physical GPU, without breaking anything if run on a system without a GPU.
+Handle Tensorflow 2s experimental virtual GPU api to easily create multiple virtual GPUs on systems with (for now) 1 physical GPU, without breaking anything if run on a system without a GPU.
 Useful for:
- - Quickly limiting GPU memory usage and avoiding some out-of-memory error bugs, and not preventing gaming while a model trains!
- - Maximising GPU usage in with parallel training where memory requirements are low bottleneck is not gpu utilisation (eg. in reinforcement learning) 
+ - Quickly limiting GPU memory usage to avoid some out-of-memory error bugs, and to allow gaming while a model trains!  
+ - Maximising GPU usage in parallel training where memory requirements are low and bottleneck is not gpu utilisation (eg. in [reinforcement learning](https://github.com/garethjns/reinforcement-learning-keras)). 
  
 # Usage
 ## Single job
@@ -33,7 +33,7 @@ mod.fit(x, y, epochs=10)
 ```
 
 ## Parallel jobs
-
+Limits GPU memory per process, or does nothing if there's no GPU.
 
 ```python
 from tf2_vgpu import VirtualGPU
@@ -73,7 +73,9 @@ The optimal number of simultaneous jobs varies depending on the model architectu
 5 jobs:
 ![5 jobs](images/5jobs.png) 
 
-## Sci-kit learn compatible gridsearch
+## Scikit-learn compatible gridsearch
+Limits GPU memory per process, or does nothing if there's no GPU.
+
 ```python
 import numpy as np
 from sklearn.base import BaseEstimator
@@ -88,8 +90,7 @@ class NerualNetowrk(BaseEstimator):
     n_epochs: int
 
     def __init__(self, n_units: int = 10, n_epochs: int = 10) -> None:
-        self.set_params(n_units=n_units,
-                        n_epochs=n_epochs)
+        self.set_params(n_units=n_units, n_epochs=n_epochs)
 
     def _build_model(self) -> None:
         input_layer = keras.layers.Input(shape=(20,))
@@ -99,6 +100,7 @@ class NerualNetowrk(BaseEstimator):
         self.mod_ = keras.Model(inputs=input_layer, outputs=output_layer)
 
     def fit(self, x: np.ndarray, y: np.ndarray) -> "NerualNetowrk":
+        # Create new GPU for each fit call
         VirtualGPU(128)
 
         self._build_model()
@@ -114,12 +116,13 @@ class NerualNetowrk(BaseEstimator):
 x = np.random.rand(500, 20)
 y = np.random.randint(0, 1, size=(500, 1))
 
+# Run gridsearch
 grid = GridSearchCV(estimator=NerualNetowrk(),
                     param_grid={'n_units': [8, 10, 12], 'n_epochs': [10, 20, 30]},
                     scoring='accuracy', n_jobs=5, verbose=10)
-
 grid.fit(x, y)
 
+# Predict from best model 
 grid.best_estimator_.predict(x)
 ```
 
