@@ -48,9 +48,6 @@ class VirtualGPU:
         # memory requirement (for example in a session that calls VirtualGPU again in agent.example()).
         existing_device = tf.config.experimental.get_virtual_device_configuration(self.physical_device)
         if existing_device is not None:
-            warnings.warn(f"A virtual GPU with {existing_device[0].memory_limit} MB memory already exists, "
-                          f"using this rather than creating another with the requested {self.gpu_memory_limit} MB."
-                          f"Good luck.")
             self.virtual_device = existing_device[0]
             self.gpu_memory_limit = existing_device[0].memory_limit
 
