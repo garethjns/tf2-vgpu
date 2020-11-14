@@ -5,17 +5,30 @@ Useful for:
  - Quickly limiting GPU memory usage to avoid some out-of-memory error bugs, and to allow gaming while a model trains!  
  - Maximising GPU usage in parallel training where memory requirements are low and bottleneck is not gpu utilisation (eg. in [reinforcement learning](https://github.com/garethjns/reinforcement-learning-keras)). 
  
-# Usage
-## Single job
+# Setup and Usage
+````bash
+pip install tf2-vgpu
+````
+
+```python 
+from tf2_vgpu import VirtualGPU
+
+VirtualGPU(128)
+
+# Training code ...
+```
+
+## Example single job
 Limits GPU memory, or does nothing if there's no GPU.
 
 ```python
-from tf2_vgpu import VirtualGPU
-
 import numpy as np
 from tensorflow import keras
 
+from tf2_vgpu import VirtualGPU
+
 # Create virtual device with limited memory. 
+# Returns flag indicating if GPU was created or not.
 gpu = VirtualGPU(128)
 
 # Create and train a dummy model
@@ -32,7 +45,7 @@ mod.compile(optimizer='adam', loss='binary_crossentropy')
 mod.fit(x, y, epochs=10)
 ```
 
-## Parallel jobs
+## Example parallel jobs
 Limits GPU memory per process, or does nothing if there's no GPU.
 
 ```python
@@ -68,12 +81,12 @@ preds = Parallel(n_jobs=5)(jobs)
 
 The optimal number of simultaneous jobs varies depending on the model architecture, data size, and the system. For example 1 vs 5 jobs for this dummy model on with a 1080ti running in Windows doubles GPU utilisation:
 1 job:
-![1 job](images/1job.png) 
+![1 job](https://raw.githubusercontent.com/garethjns/tf2-vgpu/master/images/1job.png) 
 
 5 jobs:
-![5 jobs](images/5jobs.png) 
+![5 jobs](https://raw.githubusercontent.com/garethjns/tf2-vgpu/master/images/5jobs.png) 
 
-## Scikit-learn compatible gridsearch
+## Example Scikit-learn compatible gridsearch
 Limits GPU memory per process, or does nothing if there's no GPU.
 
 ```python
