@@ -6,7 +6,7 @@ from tensorflow import keras
 from tf2_vgpu import VirtualGPU
 
 
-class NerualNetowrk(BaseEstimator):
+class NerualNetwork(BaseEstimator):
     n_units: int
     n_epochs: int
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     x = np.random.rand(500, 20)
     y = np.random.randint(0, 1, size=(500, 1))
 
-    grid = GridSearchCV(estimator=NerualNetowrk(),
+    grid = GridSearchCV(estimator=NerualNetwork(),
                         param_grid={'n_units': [8, 10, 12],
                                     'n_epochs': [10, 20, 30]},
                         scoring='accuracy', n_jobs=5,

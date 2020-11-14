@@ -11,7 +11,7 @@ class TestVirtualGPU(unittest.TestCase):
 
     @staticmethod
     def _tf_job():
-        gpu = VirtualGPU(512)
+        VirtualGPU(512)
 
         x = np.random.rand(500, 20)
         y = np.random.randint(0, 1, size=(500, 1))
